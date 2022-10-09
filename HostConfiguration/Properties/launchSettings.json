@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "HostConfiguration": {
+      "commandName": "Project",
+      "commandLineArgs": "--test=true",
+      "environmentVariables": {
+        "DOTNET_SHUTDOWNTIMEOUTSECONDS ": "10"
+      },
+      "dotnetRunMessages": true
+    }
+  }
+}

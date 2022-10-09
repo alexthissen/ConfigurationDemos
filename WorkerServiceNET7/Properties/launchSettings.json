@@ -2,6 +2,7 @@
   "profiles": {
     "WorkerService": {
       "commandName": "Project",
+      "commandLineArgs": "--slicks:listenaddress=127.0.0.1 --port=1234",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },

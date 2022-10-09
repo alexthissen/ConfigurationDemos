@@ -1,0 +1,23 @@
+namespace ContainerConfiguration
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            IHost host = Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, configuration) =>
+                {
+                    // Dynamically mounted file from Kubernetes secret
+                    configuration.AddJsonFile("secrets/appsettings.secrets.json", optional: true);
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services.Configure<WorkerSettings>(context.Configuration.GetSection(nameof(Worker)));
+                    services.AddHostedService<Worker>();
+                })
+                .Build();
+
+            host.Run();
+        }
+    }
+}

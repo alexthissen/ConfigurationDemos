@@ -4,7 +4,10 @@
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_SHUTDOWNTIMEOUTSECONDS": "30",
+        "DOTNET_hostBuilder__reloadConfigOnChange": "true"
+        // https://github.com/dotnet/runtime/blob/e2cddabc4cc7b8f646472728ada658c922dfb001/src/libraries/Microsoft.Extensions.Hosting/src/HostingHostBuilderExtensions.cs#L249
       }
     }
   }

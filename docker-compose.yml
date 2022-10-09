@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  containerconfiguration:
+    image: ${DOCKER_REGISTRY-}configurationworker
+    build:
+      context: .
+      dockerfile: ContainerConfiguration/Dockerfile

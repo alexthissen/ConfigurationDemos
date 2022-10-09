@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  containerconfiguration:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - Worker__DelayInMilliSeconds=5000
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+    ports:
+      - "5000-5016:5000-5016/udp"
