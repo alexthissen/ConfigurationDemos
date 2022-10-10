@@ -1,4 +1,5 @@
-using HostConfiguration;
+using HostStartup;
+using System.Reflection;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .UseEnvironment(Environments.Production) // Safe default
@@ -18,7 +19,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureWebHostDefaults(webBuilder =>
     {
         webBuilder
-            .UseSetting(WebHostDefaults.ApplicationKey, "TestName")
+//            .UseSetting(WebHostDefaults.ApplicationKey, "TestName")
             .CaptureStartupErrors(true)
             .PreferHostingUrls(false)
             .SuppressStatusMessages(false);
@@ -29,7 +30,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         webBuilder.UseEnvironment(Environments.Staging);
         webBuilder.UseWebRoot(Directory.GetCurrentDirectory());
         webBuilder.UseStaticWebAssets();
-
+        webBuilder.UseSetting(WebHostDefaults.StartupAssemblyKey, Assembly.GetExecutingAssembly().GetName().Name);
+        
         // Kestrel server can also be configured programmatically
         webBuilder.ConfigureKestrel(options =>
         {
@@ -47,13 +49,14 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         // Add additional providers for application configuration
     })
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
         services.Configure<HostOptions>(options =>
         {
             // In .NET 5.0 DOTNET_SHUTDOWNTIMEOUTSECONDS is not respected. Fixed in .NET 6.0
             options.ShutdownTimeout = TimeSpan.FromSeconds(10);
         });
+        services.Configure<WorkerOptions>(context.Configuration.GetRequiredSection(nameof(Worker)));
         services.AddHostedService<Worker>();
     })
     .Build();

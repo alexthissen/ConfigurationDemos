@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<Worker>
+		<WelcomeText>Hello from XML</WelcomeText>
+	</Worker>
+    <Logging>
+        <LogLevel>
+            <Default>Information</Default>
+            <Microsoft>Warning</Microsoft>
+        </LogLevel>
+    </Logging>
+</configuration>

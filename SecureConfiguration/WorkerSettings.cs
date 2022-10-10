@@ -1,4 +1,4 @@
-﻿namespace AzureAppConfiguration;
+﻿namespace SecureConfiguration;
 
 public record WorkerSettings
 {

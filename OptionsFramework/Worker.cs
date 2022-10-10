@@ -1,18 +1,37 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace HostStartup
+namespace OptionsFramework
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> logger;
-        private readonly IHostEnvironment env;
         private readonly WorkerOptions options;
-
-        public Worker(ILogger<Worker> logger, IHostEnvironment env, IOptions<WorkerOptions> options)
+        
+        public Worker(ILogger<Worker> logger, 
+            IOptions<WorkerOptions> options)
         {
             this.logger = logger;
-            this.env = env;
-            this.options = options.Value;
+            try
+            {
+                this.options = options.Value;
+            }
+            catch (OptionsValidationException ex)
+            {
+                foreach (string failure in ex.Failures)
+                {
+                    logger.LogWarning(failure);
+                }
+                // Safe defaults
+                this.options = new();
+            }
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -29,7 +48,7 @@ namespace HostStartup
             while (!stoppingToken.IsCancellationRequested)
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(options.DelayInMilliSeconds, stoppingToken);
             }
         }
     }

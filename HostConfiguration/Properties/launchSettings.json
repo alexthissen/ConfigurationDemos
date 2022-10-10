@@ -2,7 +2,7 @@
   "profiles": {
     "HostConfiguration": {
       "commandName": "Project",
-      "commandLineArgs": "--test=true",
+      "commandLineArgs": "--worker:welcometext=Welcome from command-line",
       "environmentVariables": {
         "DOTNET_SHUTDOWNTIMEOUTSECONDS ": "10"
       },
