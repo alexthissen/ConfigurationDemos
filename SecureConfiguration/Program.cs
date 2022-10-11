@@ -24,7 +24,7 @@ IHost host = Host.CreateDefaultBuilder(args)
                 //section.Get<ClientSecretCredential>(options => { options.BindNonPublicProperties = true; });
 
                 // For managed identities use:
-                // new DefaultAzureCredential()
+                // new DefaultAzureCredential();
                 new ClientSecretCredential(
                     section["TenantId"],
                     section["ClientId"],

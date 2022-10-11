@@ -19,7 +19,6 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureWebHostDefaults(webBuilder =>
     {
         webBuilder
-//            .UseSetting(WebHostDefaults.ApplicationKey, "TestName")
             .CaptureStartupErrors(true)
             .PreferHostingUrls(false)
             .SuppressStatusMessages(false);

@@ -1,5 +1,7 @@
 using AdvancedConfiguration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
+using System.Diagnostics;
 using System.Text;
 
 IHost host = Host.CreateDefaultBuilder()
@@ -7,7 +9,7 @@ IHost host = Host.CreateDefaultBuilder()
     {
         config.Sources.Clear();
         IHostEnvironment env = hostingContext.HostingEnvironment;
-                    
+
         config.AddJsonFile("appsettings.json", optional: true);
         config.AddJsonFile($"appsettings.{env.EnvironmentName}.json");
 
@@ -31,6 +33,12 @@ IHost host = Host.CreateDefaultBuilder()
     .ConfigureServices((context, services) =>
     {
         IConfigurationSection section = context.Configuration.GetRequiredSection(nameof(Worker));
+
+        //ChangeToken.OnChange(
+        //    () => section.GetReloadToken(),
+        //    state => { Debug.WriteLine("Config has changed"); },
+        //    context.HostingEnvironment
+        //);
 
         // Get
         WorkerSettings workerSettings = section.Get<WorkerSettings>(options =>

@@ -1,3 +1,4 @@
+using Azure.Identity;
 using AzureAppConfiguration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
@@ -14,6 +15,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             config.AddAzureAppConfiguration(options =>
             {
                 options.Connect(connection);
+
                 // TODO: Make it environment aware
                 options.Select(KeyFilter.Any);
                 options.ConfigureRefresh(refresh =>

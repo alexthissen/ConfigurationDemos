@@ -19,8 +19,10 @@ namespace ContainerConfiguration
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Running with delay of {delay}ms", settings.Value.DelayInMilliSeconds);
-            logger.LogInformation(((IConfigurationRoot)configuration).GetDebugView());
+            logger.LogWarning(settings.Value.WelcomeText);
+            logger.LogWarning("Delay of {delay}ms", settings.Value.DelayInMilliSeconds);
+            logger.LogWarning($"Admin password is '{settings.Value.AdminPassword}'");
+
             return base.StartAsync(cancellationToken);
         }
 

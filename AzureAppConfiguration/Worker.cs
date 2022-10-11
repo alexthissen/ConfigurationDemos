@@ -18,6 +18,15 @@ namespace AzureAppConfiguration
             this.refresher = refresher;
         }
 
+        public override Task StartAsync(CancellationToken cancellationToken)
+        {
+            logger.LogWarning(settings.CurrentValue.WelcomeText);
+            logger.LogWarning("Delay of {delay}ms", settings.CurrentValue.DelayInMilliSeconds);
+            logger.LogWarning($"Admin password is '{settings.CurrentValue.AdminPassword}'");
+
+            return base.StartAsync(cancellationToken);
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
