@@ -39,14 +39,10 @@ namespace BasicConfiguration
             // Better way to extract a typed value
             int delay = configuration.GetValue<int>("DelayInMilliSeconds");
 
-            // Binding
-            WorkerSettings workerSettings = new();
-            configuration.Bind(workerSettings);
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(workerSettings.DelayInMilliSeconds, stoppingToken);
+                await Task.Delay(delay, stoppingToken);
             }
         }
     }

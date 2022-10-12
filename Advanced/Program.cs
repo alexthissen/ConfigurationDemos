@@ -14,11 +14,11 @@ IHost host = Host.CreateDefaultBuilder()
         config.AddJsonFile($"appsettings.{env.EnvironmentName}.json");
 
         config.AddIniFile("appsettings.ini", optional: false);
-        config.AddXmlFile("appsettings.xml");
+        config.AddXmlFile("appsettings.xml", optional: true, reloadOnChange: true);
 
         // Add stream containing JSON
-        //Stream json = new MemoryStream(Encoding.UTF8.GetBytes("{ \"DelayInMilliSeconds\": \"1337\"}")); ;
-        //config.AddJsonStream(json);
+        Stream json = new MemoryStream(Encoding.UTF8.GetBytes("{ \"DelayInMilliSeconds\": \"1337\"}"));
+        config.AddJsonStream(json);
 
         // Alternative add a complete IConfiguration structure
         var dictionary = new Dictionary<string, string> {
@@ -28,24 +28,23 @@ IHost host = Host.CreateDefaultBuilder()
         builder.AddInMemoryCollection(dictionary);
         config.AddConfiguration(builder.Build());
 
-        var con = config.Build();
+        //var con = config.Build();
     })
     .ConfigureServices((context, services) =>
     {
         IConfigurationSection section = context.Configuration.GetRequiredSection(nameof(Worker));
 
-        //ChangeToken.OnChange(
-        //    () => section.GetReloadToken(),
-        //    state => { Debug.WriteLine("Config has changed"); },
-        //    context.HostingEnvironment
-        //);
+        // Binding
+        WorkerSettings workerSettings = new();
+        section.Bind(workerSettings);
 
-        // Get
-        WorkerSettings workerSettings = section.Get<WorkerSettings>(options =>
+        // Get with binding to non-public props
+        workerSettings = section.Get<WorkerSettings>(options =>
         {
             options.BindNonPublicProperties = true;
         });
 
+        // Settings shouldn't change and can be singleton
         services.AddSingleton(workerSettings);
         services.AddHostedService<Worker>();
     })

@@ -8,7 +8,8 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddSingleton<PopularPasswordChecker>();
-        services.Configure<WorkerOptions>(hostContext.Configuration);
+
+        //services.Configure<WorkerOptions>(hostContext.Configuration);
         services.AddOptions<WorkerOptions>()
             .Bind(hostContext.Configuration.GetRequiredSection(nameof(Worker)),
                 binder =>

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace HostStartup
@@ -6,17 +7,24 @@ namespace HostStartup
     {
         private readonly ILogger<Worker> logger;
         private readonly IHostEnvironment env;
+        private readonly IConfiguration configuration;
         private readonly WorkerOptions options;
 
-        public Worker(ILogger<Worker> logger, IHostEnvironment env, IOptions<WorkerOptions> options)
+        public Worker(ILogger<Worker> logger, IHostEnvironment env, 
+            IOptions<WorkerOptions> options, IConfiguration configuration)
         {
             this.logger = logger;
             this.env = env;
             this.options = options.Value;
+
+            // For demo purpose only. See StartAsync
+            this.configuration = configuration;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
+            logger.LogInformation(((IConfigurationRoot)configuration).GetDebugView());
+
             logger.LogWarning(options.WelcomeText);
             logger.LogWarning("Delay of {delay}ms", options.DelayInMilliSeconds);
             logger.LogWarning($"Admin password is '{options.AdminPassword}'");

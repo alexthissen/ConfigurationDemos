@@ -1,12 +1,26 @@
 {
   "profiles": {
-    "HostConfiguration": {
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {
+        "DOTNETCORE_ENVIRONMENT": "Production"
+      },
+      "distributionName": ""
+    },
+    "HostStartup (Testing)": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNETCORE_ENVIRONMENT": "Production"
+      }
+    },
+    "HostStartup": {
       "commandName": "Project",
       "commandLineArgs": "--worker:welcometext=Welcome from command-line",
       "environmentVariables": {
-        "DOTNET_SHUTDOWNTIMEOUTSECONDS ": "10"
+        "ASPNETCORE_SHUTDOWNTIMEOUTSECONDS ": "10"
       },
-      "dotnetRunMessages": true
+      "dotnetRunMessages": true,
+      "hotReloadEnabled": true
     }
   }
 }

@@ -1,6 +1,8 @@
 using Azure.Identity;
 using AzureAppConfiguration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.Extensions.Primitives;
+using System.Diagnostics;
 
 IConfigurationRefresher? refresher = null;
 
@@ -16,8 +18,8 @@ IHost host = Host.CreateDefaultBuilder(args)
             {
                 options.Connect(connection);
 
-                // TODO: Make it environment aware
-                options.Select(KeyFilter.Any);
+                // Config is environment aware
+                options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
                 options.ConfigureRefresh(refresh =>
                 {
                     refresh.Register("Sentinel", refreshAll: true)
@@ -35,7 +37,14 @@ IHost host = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
-        services.Configure<WorkerSettings>(context.Configuration.GetSection(nameof(Worker)));
+        IConfigurationSection section = context.Configuration.GetSection(nameof(Worker));
+        ChangeToken.OnChange(
+            () => section.GetReloadToken(),
+            state => { Debug.WriteLine("Config has changed"); },
+            context.HostingEnvironment
+        );
+
+        services.Configure<WorkerOptions>(section);
         services.AddHostedService<Worker>();
         if (refresher is not null) services.AddSingleton(refresher);
 

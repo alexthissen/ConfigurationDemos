@@ -8,19 +8,21 @@ namespace SecureConfiguration
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> logger;
-        private readonly IOptions<WorkerSettings> settings;
+        private readonly IOptions<WorkerOptions> options;
         private readonly IConfiguration configuration;
 
-        public Worker(ILogger<Worker> logger, IOptions<WorkerSettings> settings, IConfiguration configuration)
+        public Worker(ILogger<Worker> logger, IOptions<WorkerOptions> options, IConfiguration configuration)
         {
             this.logger = logger;
-            this.settings = settings;
+            this.options = options;
+
+            // For demos purposes only
             this.configuration = configuration;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Running with delay of {delay}ms", settings.Value.DelayInMilliSeconds);
+            logger.LogInformation("Running with delay of {delay}ms", options.Value.DelayInMilliSeconds);
             logger.LogInformation(((IConfigurationRoot)configuration)
                 .GetDebugView(context => context switch 
                 {

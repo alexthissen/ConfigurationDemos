@@ -8,7 +8,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
-        services.Configure<WorkerSettings>(context.Configuration.GetSection(nameof(Worker)));
+        services.Configure<WorkerOptions>(context.Configuration.GetSection(nameof(Worker)));
         services.AddHostedService<Worker>();
     })
     .Build();

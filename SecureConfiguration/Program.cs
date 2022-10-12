@@ -6,7 +6,8 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using SecureConfiguration;
 using System.Reflection;
 
-[assembly: UserSecretsId("ConfigurationWorkerSecrets")]
+// Generated from MSBuild project property
+//[assembly: UserSecretsId("ConfigurationWorkerSecrets")]
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((context, config) =>
@@ -20,11 +21,12 @@ IHost host = Host.CreateDefaultBuilder(args)
         if (section.Exists() && !String.IsNullOrEmpty(section["VaultUri"]))
         {
             var credential =
-                // Doesn't work because of multiple parametrized constructors
-                //section.Get<ClientSecretCredential>(options => { options.BindNonPublicProperties = true; });
-
                 // For managed identities use:
                 // new DefaultAzureCredential();
+
+                // Code below doesn't work because of multiple parametrized constructors
+                //section.Get<ClientSecretCredential>(options => { options.BindNonPublicProperties = true; });
+
                 new ClientSecretCredential(
                     section["TenantId"],
                     section["ClientId"],
@@ -43,7 +45,11 @@ IHost host = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
-        services.Configure<WorkerSettings>(context.Configuration.GetSection(nameof(Worker)));
+        var options = context.Configuration.GetSection(nameof(Worker)).Get<WorkerOptions>();
+        services
+            .AddOptions<WorkerOptions>()
+            .Bind<WorkerOptions>(context.Configuration.GetSection(nameof(Worker)));
+
         services.AddHostedService<Worker>();
     })
     .Build();

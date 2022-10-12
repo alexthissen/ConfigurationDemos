@@ -6,10 +6,10 @@ namespace ContainerConfiguration
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> logger;
-        private readonly IOptions<WorkerSettings> settings;
+        private readonly IOptions<WorkerOptions> settings;
         private readonly IConfiguration configuration;
 
-        public Worker(ILogger<Worker> logger, IOptions<WorkerSettings> settings,
+        public Worker(ILogger<Worker> logger, IOptions<WorkerOptions> settings,
             IConfiguration configuration)
         {
             this.logger = logger;
@@ -19,6 +19,9 @@ namespace ContainerConfiguration
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
+            logger.LogInformation(
+                ((IConfigurationRoot)configuration).GetDebugView());
+
             logger.LogWarning(settings.Value.WelcomeText);
             logger.LogWarning("Delay of {delay}ms", settings.Value.DelayInMilliSeconds);
             logger.LogWarning($"Admin password is '{settings.Value.AdminPassword}'");

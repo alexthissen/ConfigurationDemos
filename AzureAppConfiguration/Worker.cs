@@ -6,12 +6,12 @@ namespace AzureAppConfiguration
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> logger;
-        private readonly IOptionsMonitor<WorkerSettings> settings;
+        private readonly IOptionsMonitor<WorkerOptions> settings;
         private readonly IConfigurationRefresher refresher;
 
         public Worker(ILogger<Worker> logger, 
             IConfigurationRefresher refresher,
-            IOptionsMonitor<WorkerSettings> settings)
+            IOptionsMonitor<WorkerOptions> settings)
         {
             this.logger = logger;
             this.settings = settings;
