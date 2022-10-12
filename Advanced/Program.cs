@@ -34,7 +34,7 @@ IHost host = Host.CreateDefaultBuilder()
     {
         IConfigurationSection section = context.Configuration.GetRequiredSection(nameof(Worker));
 
-        // Binding
+        // Binding requires existing object
         WorkerSettings workerSettings = new();
         section.Bind(workerSettings);
 

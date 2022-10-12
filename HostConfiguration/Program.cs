@@ -26,10 +26,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         webBuilder.UseShutdownTimeout(TimeSpan.FromSeconds(10));
         webBuilder.UseUrls("http://localhost:5010");
         webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-        webBuilder.UseEnvironment(Environments.Staging);
         webBuilder.UseWebRoot(Directory.GetCurrentDirectory());
         webBuilder.UseStaticWebAssets();
-        webBuilder.UseSetting(WebHostDefaults.StartupAssemblyKey, Assembly.GetExecutingAssembly().GetName().Name);
         
         // Kestrel server can also be configured programmatically
         webBuilder.ConfigureKestrel(options =>
@@ -39,14 +37,18 @@ IHost host = Host.CreateDefaultBuilder(args)
             options.Limits.MaxConcurrentUpgradedConnections = 100;
             options.Limits.MaxRequestBodySize = 52428800;
         });
+
+        //webBuilder.UseStartup<Startup>();
+        Assembly startupAssembly = typeof(Startup).GetTypeInfo().Assembly;
+        webBuilder.UseStartup(startupAssembly.GetName().Name);
     })
     .ConfigureAppConfiguration((context, builder) =>
     {
         // Retrieve configuration from host
         var config = context.Configuration;
-        context.HostingEnvironment.EnvironmentName = "Different";
-
+        
         // Add additional providers for application configuration
+        // You might need a partial build
     })
     .ConfigureServices((context, services) =>
     {
@@ -55,6 +57,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             // In .NET 5.0 DOTNET_SHUTDOWNTIMEOUTSECONDS is not respected. Fixed in .NET 6.0
             options.ShutdownTimeout = TimeSpan.FromSeconds(10);
         });
+
         services.Configure<WorkerOptions>(context.Configuration.GetRequiredSection(nameof(Worker)));
         services.AddHostedService<Worker>();
     })

@@ -3,21 +3,22 @@
     "WSL": {
       "commandName": "WSL2",
       "environmentVariables": {
-        "DOTNETCORE_ENVIRONMENT": "Production"
+        "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "distributionName": ""
     },
-    "HostStartup (Testing)": {
+    "HostStartup (Production)": {
       "commandName": "Project",
       "environmentVariables": {
-        "DOTNETCORE_ENVIRONMENT": "Production"
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     },
     "HostStartup": {
       "commandName": "Project",
       "commandLineArgs": "--worker:welcometext=Welcome from command-line",
       "environmentVariables": {
-        "ASPNETCORE_SHUTDOWNTIMEOUTSECONDS ": "10"
+        "ASPNETCORE_SHUTDOWNTIMEOUTSECONDS ": "10",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
       "hotReloadEnabled": true

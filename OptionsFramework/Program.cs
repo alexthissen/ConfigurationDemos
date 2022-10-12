@@ -9,9 +9,14 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.AddSingleton<PopularPasswordChecker>();
 
-        //services.Configure<WorkerOptions>(hostContext.Configuration);
+        IConfigurationSection section = hostContext.Configuration.GetRequiredSection(nameof(Worker));
+
+        // Simple version
+        services.Configure<WorkerOptions>(section);
+
+        // Advanced version
         services.AddOptions<WorkerOptions>()
-            .Bind(hostContext.Configuration.GetRequiredSection(nameof(Worker)),
+            .Bind(section,
                 binder =>
                 {
                     binder.ErrorOnUnknownConfiguration = true;
@@ -21,7 +26,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             .Validate<PopularPasswordChecker>(
                 (options, checker) => !checker.IsPopular(options.AdminPassword),
                 "Admin password is common.");
-        //.ValidateOnStart();
+            //.ValidateOnStart();
 
         services.AddHostedService<Worker>();
     })

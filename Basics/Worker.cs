@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace BasicConfiguration
 {
@@ -41,7 +40,8 @@ namespace BasicConfiguration
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Worker says {welcome} running at: {time}",
+                    configuration["WelcomeText"], DateTimeOffset.Now);
                 await Task.Delay(delay, stoppingToken);
             }
         }

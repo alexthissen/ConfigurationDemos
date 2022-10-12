@@ -24,7 +24,8 @@ public class Worker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            logger.LogInformation("Worker says {welcome} at: {time}", 
+                settings.WelcomeText, DateTimeOffset.Now);
             await Task.Delay(settings.DelayInMilliSeconds, stoppingToken);
         }
     }
