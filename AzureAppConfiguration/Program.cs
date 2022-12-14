@@ -38,6 +38,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         IConfigurationSection section = context.Configuration.GetSection(nameof(Worker));
+        
         ChangeToken.OnChange(
             () => section.GetReloadToken(),
             state => { Debug.WriteLine("Config has changed"); },

@@ -25,8 +25,8 @@ IHost host = Host.CreateDefaultBuilder(args)
             .ValidateDataAnnotations()
             .Validate<PopularPasswordChecker>(
                 (options, checker) => !checker.IsPopular(options.AdminPassword),
-                "Admin password is common.");
-            //.ValidateOnStart();
+                "Admin password is common.")
+            .ValidateOnStart();
 
         services.AddHostedService<Worker>();
     })
