@@ -4,34 +4,35 @@ using Microsoft.Extensions.Hosting;
 using OptionsFramework;
 using System;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((hostContext, services) =>
-    {
-        services.AddSingleton<PopularPasswordChecker>();
 
-        IConfigurationSection section = hostContext.Configuration.GetRequiredSection(nameof(Worker));
+// New .NET 8.0 startup for worker services and background services
+var builder = Host.CreateApplicationBuilder(args);
 
-        // Simple version
-        services.Configure<WorkerOptions>(section);
+builder.Services.AddSingleton<PopularPasswordChecker>();
 
-        // Advanced version
-        services.AddOptions<WorkerOptions>()
-            .Bind(section,
-                binder =>
-                {
-                    binder.ErrorOnUnknownConfiguration = true;
-                    binder.BindNonPublicProperties = true;
-                })
-            .ValidateDataAnnotations()
-            .Validate<PopularPasswordChecker>(
-                (options, checker) => !checker.IsPopular(options.AdminPassword),
-                "Admin password is common.")
-            .ValidateOnStart();
+IConfigurationSection section = builder.Configuration.GetRequiredSection(nameof(Worker));
 
-        services.AddHostedService<Worker>();
-    })
-    .Build();
+// Simple version
+builder.Services.Configure<WorkerOptions>(section);
 
+// Advanced version
+builder.Services
+    .AddOptions<WorkerOptions>()
+    .Bind(section,
+        binder =>
+        {
+            binder.ErrorOnUnknownConfiguration = true;
+            binder.BindNonPublicProperties = true;
+        })
+    .ValidateDataAnnotations()
+    .Validate<PopularPasswordChecker>(
+        (options, checker) => !checker.IsPopular(options.AdminPassword),
+        "Admin password is common.");
+    //.ValidateOnStart();
+
+builder.Services.AddHostedService<Worker>();
+
+var host = builder.Build();
 host.Run();
 
 public class PopularPasswordChecker

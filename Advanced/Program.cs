@@ -21,14 +21,14 @@ IHost host = Host.CreateDefaultBuilder()
         config.AddJsonStream(json);
 
         // Alternative add a complete IConfiguration structure
-        var dictionary = new Dictionary<string, string> {
+        var dictionary = new Dictionary<string, string?> {
             { "HostOption", "From in-memory HostConfiguration" }
         };
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(dictionary);
         config.AddConfiguration(builder.Build());
 
-        //var con = config.Build();
+        var con = config.Build();
     })
     .ConfigureServices((context, services) =>
     {
@@ -42,10 +42,10 @@ IHost host = Host.CreateDefaultBuilder()
         workerSettings = section.Get<WorkerSettings>(options =>
         {
             options.BindNonPublicProperties = true;
-        });
+        }) ?? new();
 
         // Settings shouldn't change and can be singleton
-        services.AddSingleton(workerSettings);
+        services.AddSingleton(workerSettings!);
         services.AddHostedService<Worker>();
     })
     .Build();

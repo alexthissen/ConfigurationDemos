@@ -6,52 +6,50 @@ using System.Diagnostics;
 
 IConfigurationRefresher? refresher = null;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration((context, config) =>
-    {
-        // Partial config build needed when using ConfigurationBuilder
-        string connection = config.Build().GetConnectionString("AppConfig");
+var builder = Host.CreateApplicationBuilder(args);
 
-        if (!String.IsNullOrEmpty(connection))
+// Partial config build no longer needed when using ConfigurationManager
+//string connection = config.Build().GetConnectionString("AppConfig");
+
+string? connection = builder.Configuration.GetConnectionString("AppConfig");
+
+if (!String.IsNullOrEmpty(connection))
+{
+    builder.Configuration.AddAzureAppConfiguration(options =>
+    {
+        options.Connect(connection);
+
+        // Config is environment aware
+        options.Select(KeyFilter.Any, builder.Environment.EnvironmentName);
+        options.ConfigureRefresh(refresh =>
         {
-            config.AddAzureAppConfiguration(options =>
-            {
-                options.Connect(connection);
+            refresh.Register("Sentinel", refreshAll: true)
+                .SetCacheExpiration(new TimeSpan(0, 1, 0));
+        });
+        refresher = options.GetRefresher();
 
-                // Config is environment aware
-                options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
-                options.ConfigureRefresh(refresh =>
-                {
-                    refresh.Register("Sentinel", refreshAll: true)
-                        .SetCacheExpiration(new TimeSpan(0, 1, 0));
-                });
-                refresher = options.GetRefresher();
+        options.UseFeatureFlags(feature =>
+        {
+            feature.CacheExpirationInterval = TimeSpan.FromSeconds(30);
+            feature.Label = builder.Environment.EnvironmentName;
+        });
+    }, false); // Important to set for missing App Configuration service
+}
 
-                options.UseFeatureFlags(feature =>
-                {
-                    feature.CacheExpirationInterval = TimeSpan.FromSeconds(30);
-                    feature.Label = context.HostingEnvironment.EnvironmentName;
-                });
-            }, false); // Important to set for missing App Configuration service
-        }
-    })
-    .ConfigureServices((context, services) =>
-    {
-        IConfigurationSection section = context.Configuration.GetSection(nameof(Worker));
+IConfigurationSection section = builder.Configuration.GetSection(nameof(Worker));
         
-        ChangeToken.OnChange(
-            () => section.GetReloadToken(),
-            state => { Debug.WriteLine("Config has changed"); },
-            context.HostingEnvironment
-        );
+ChangeToken.OnChange(
+    () => section.GetReloadToken(),
+    state => { Debug.WriteLine("Config has changed"); },
+    builder.Environment
+);
 
-        services.Configure<WorkerOptions>(section);
-        services.AddHostedService<Worker>();
-        if (refresher is not null) services.AddSingleton(refresher);
+builder.Services.Configure<WorkerOptions>(section);
+builder.Services.AddHostedService<Worker>();
+if (refresher is not null) builder.Services.AddSingleton(refresher);
 
-        // Required for refresh
-        services.AddAzureAppConfiguration();
-    })
-    .Build();
+// Required for refresh
+builder.Services.AddAzureAppConfiguration();
 
+var host = builder.Build();
 host.Run();

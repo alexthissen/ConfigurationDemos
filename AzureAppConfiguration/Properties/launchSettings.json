@@ -1,11 +1,19 @@
-﻿{
+{
   "profiles": {
     "AzureAppConfiguration": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": true
+    },
+    "Production": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "ConnectionStrings:AppConfig": "Endpoint=https://conferenceappconfiguration.azconfig.io;Id=Nmoc-l9-s0:CVzjv6/HkLRDbwl8KEXf;Secret=qFdV3uuG2CnL8qt9F/C0TLbTJjWX7LdAV4gRb5x6GYE="
+      },
+      "dotnetRunMessages": true
     }
   }
 }

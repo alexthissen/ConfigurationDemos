@@ -69,21 +69,21 @@ spec:
           value: Production
         - name: Worker__DelayInMilliSeconds
           value: "5000"
-        - name: ConnectionStrings__AppConfig
-          value: <your-appconfig_connectionstring>
         - name: ApplicationInsights__InstrumentationKey
+          value: <your-instrumentation-key>
+        - name: ConnectionStrings__AppConfig
           valueFrom:
             secretKeyRef:
-              name: appinsights-secret
-              key: instrumentation_key
+              name: appconfig-secret
+              key: connection_string
               optional: false 
         ports:
         - containerPort: 80
         - containerPort: 443
-        volumeMounts:
-        - name: secretsettings
-          mountPath: /app/secrets
-          readOnly: true
+        # volumeMounts:
+        # - name: secretsettings
+        #   mountPath: /app/secrets
+        #   readOnly: true
         resources:
           limits:
             cpu: "0.10"

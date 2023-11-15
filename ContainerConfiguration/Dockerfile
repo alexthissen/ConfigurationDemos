@@ -1,20 +1,23 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0 AS base
+FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
+USER app
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ContainerConfiguration/ContainerConfiguration.csproj", "ContainerConfiguration/"]
-RUN dotnet restore "ContainerConfiguration/ContainerConfiguration.csproj"
+COPY ["ContainerConfiguration/8.ContainerEnvironment.csproj", "ContainerConfiguration/"]
+RUN dotnet restore "./ContainerConfiguration/./8.ContainerEnvironment.csproj"
 COPY . .
 WORKDIR "/src/ContainerConfiguration"
-RUN dotnet build "ContainerConfiguration.csproj" -c Release -o /app/build
+RUN dotnet build "./8.ContainerEnvironment.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "ContainerConfiguration.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./8.ContainerEnvironment.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ContainerConfiguration.dll"]
+ENTRYPOINT ["dotnet", "8.ContainerEnvironment.dll"]

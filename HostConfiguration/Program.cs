@@ -6,7 +6,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     .UseConsoleLifetime(options => { options.SuppressStatusMessages = false; })
     .ConfigureHostConfiguration(config =>
     {
-        var dictionary = new Dictionary<string, string> {
+        var dictionary = new Dictionary<string, string?> {
                         { "HostOption", "From in-memory HostConfiguration" }
         };
         config.AddInMemoryCollection(dictionary);
@@ -38,9 +38,9 @@ IHost host = Host.CreateDefaultBuilder(args)
             options.Limits.MaxRequestBodySize = 52428800;
         });
 
-        //webBuilder.UseStartup<Startup>();
-        Assembly startupAssembly = typeof(Startup).GetTypeInfo().Assembly;
-        webBuilder.UseStartup(startupAssembly.GetName().Name);
+        webBuilder.UseStartup<Startup>();
+        //Assembly startupAssembly = typeof(Startup).GetTypeInfo().Assembly;
+        //webBuilder.UseStartup(startupAssembly.GetName().Name);
     })
     .ConfigureAppConfiguration((context, builder) =>
     {
